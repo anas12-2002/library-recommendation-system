@@ -693,4 +693,5 @@ This project is part of an academic course at Istanbul Okan University.
 **Status**: Frontend complete ✅ | Backend implementation guides ready ✅  
 **Next Step**: [QUICK_START.md](./QUICK_START.md) 🚀
 #   l i b r a r y - r e c o m m e n d a t i o n - s y s t e m  
+ #   l i b r a r y - r e c o m m e n d a t i o n - s y s t e m  
  
