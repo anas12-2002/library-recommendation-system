@@ -408,7 +408,7 @@ export const handler = async (event) => {
 4. **Test**:
 
 ```bash
-curl https://YOUR-API-ID.execute-api.us-east-1.amazonaws.com/dev/books/1
+curl https://jqvee48nk3.execute-api.us-east-1.amazonaws.com/dev/books/1
 ```
 
 ### Day 5-7: Implement Reading Lists API
