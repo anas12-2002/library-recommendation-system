@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/common/Button';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { getBook } from '@/services/api';
+import { mockBooks } from '@/services/mockData'; // استيراد مباشر للـ mock data
 import { Book } from '@/types';
 import { formatRating } from '@/utils/formatters';
 import { handleApiError } from '@/utils/errorHandling';
@@ -15,24 +16,54 @@ export function BookDetail() {
   const navigate = useNavigate();
   const [book, setBook] = useState<Book | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    console.log('🔄 [BookDetail] Component mounted');
+    console.log('📌 [BookDetail] Book ID from URL:', id);
+
     if (id) {
       loadBook(id);
+    } else {
+      console.error('❌ [BookDetail] No book ID provided in URL');
+      setError('No book ID provided');
+      setIsLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const loadBook = async (bookId: string) => {
+    console.log('📖 [BookDetail] loadBook called with ID:', bookId);
     setIsLoading(true);
+    setError(null);
+
     try {
+      console.log('🔍 [BookDetail] Calling getBook API...');
+
+      // محاولة جلب الكتاب من API
       const data = await getBook(bookId);
-      if (!data) {
-        navigate('/404');
-        return;
+
+      console.log('📦 [BookDetail] getBook returned:', data);
+
+      if (data) {
+        console.log('✅ [BookDetail] Book loaded successfully:', data.title);
+        setBook(data);
+      } else {
+        // Fallback: البحث مباشرة في mockBooks
+        console.log('⚠️ [BookDetail] API returned null, trying mock data...');
+        const mockBook = mockBooks.find((b) => b.id === bookId);
+
+        if (mockBook) {
+          console.log('✅ [BookDetail] Found in mock data:', mockBook.title);
+          setBook(mockBook);
+        } else {
+          console.error('❌ [BookDetail] Book not found anywhere');
+          setError(`Book with ID "${bookId}" not found`);
+        }
       }
-      setBook(data);
     } catch (error) {
+      console.error('💥 [BookDetail] Error loading book:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      setError(`Failed to load book: ${errorMessage}`);
       handleApiError(error);
     } finally {
       setIsLoading(false);
@@ -52,12 +83,75 @@ export function BookDetail() {
     );
   }
 
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
+        <div className="glass-effect p-8 rounded-2xl border border-white/20 shadow-lg max-w-md text-center">
+          <div className="w-16 h-16 bg-gradient-to-br from-red-100 to-pink-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <svg
+              className="w-8 h-8 text-red-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+              />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-slate-900 mb-2">Error Loading Book</h2>
+          <p className="text-slate-600 mb-4">{error}</p>
+          <div className="flex flex-col gap-3 mt-6">
+            <Button variant="primary" onClick={() => navigate('/books')}>
+              ← Back to Books
+            </Button>
+            <Button variant="outline" onClick={() => navigate('/')}>
+              Go Home
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!book) {
-    return null;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
+        <div className="glass-effect p-8 rounded-2xl border border-white/20 shadow-lg max-w-md text-center">
+          <div className="w-16 h-16 bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <svg
+              className="w-8 h-8 text-slate-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-slate-900 mb-2">Book Not Found</h2>
+          <p className="text-slate-600 mb-4">
+            The book with ID{' '}
+            <span className="font-mono bg-slate-100 px-2 py-1 rounded">"{id}"</span> doesn't exist.
+          </p>
+          <p className="text-sm text-slate-500 mb-6">Available book IDs: 1 through 10</p>
+          <Button variant="primary" onClick={() => navigate('/books')}>
+            Browse Available Books
+          </Button>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen py-12 px-4">
+    <div className="min-h-screen py-12 px-4 bg-gradient-to-br from-slate-50 to-slate-100">
       <div className="container mx-auto max-w-6xl">
         <button
           onClick={() => navigate(-1)}

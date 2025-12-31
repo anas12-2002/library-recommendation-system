@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Book } from '@/types';
 import { formatRating } from '@/utils/formatters';
 import { Button } from '@/components/common/Button';
@@ -12,21 +12,12 @@ interface BookCardProps {
 
 /**
  * Modern BookCard with beautiful hover effects and gradients
- *
- * @example
- * <BookCard book={book} />
  */
 export function BookCard({ book }: BookCardProps) {
-  const navigate = useNavigate();
-
-  const handleClick = () => {
-    navigate(`/books/${book.id}`);
-  };
-
   return (
-    <div
-      className="glass-effect rounded-2xl overflow-hidden card-hover cursor-pointer group border border-white/20 hover-glow"
-      onClick={handleClick}
+    <Link
+      to={`/books/${book.id}`}
+      className="glass-effect rounded-2xl overflow-hidden card-hover cursor-pointer group border border-white/20 hover-glow block"
     >
       <div className="relative overflow-hidden">
         <img
@@ -44,8 +35,7 @@ export function BookCard({ book }: BookCardProps) {
             size="sm"
             className="w-full"
             onClick={(e) => {
-              e.stopPropagation();
-              handleClick();
+              e.preventDefault();
             }}
           >
             View Details
@@ -85,6 +75,6 @@ export function BookCard({ book }: BookCardProps) {
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
