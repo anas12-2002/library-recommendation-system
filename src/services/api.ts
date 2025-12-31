@@ -41,8 +41,8 @@ import { mockBooks, mockReadingLists } from './mockData';
  */
 
 // TODO: Uncomment this after deploying API Gateway (Week 2, Day 4)
-// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const API_BASE_URL = 'https://jqvee48nk3.execute-api.us-east-1.amazonaws.com/dev';
 /**
  * TODO: Implement this function in Week 3, Day 4
  *
@@ -89,10 +89,35 @@ import { mockBooks, mockReadingLists } from './mockData';
  * Expected response: Array of Book objects from DynamoDB
  */
 export async function getBooks(): Promise<Book[]> {
-  // TODO: Remove this mock implementation after deploying Lambda
-  return new Promise((resolve) => {
-    setTimeout(() => resolve(mockBooks), 500);
-  });
+  try {
+    const response = await fetch(`${API_BASE_URL}/books`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const result = await response.json();
+    
+    // Lambda ترجع { statusCode, headers, body }
+    if (result.body) {
+      const books = JSON.parse(result.body);
+      console.log('Real books from API:', books);
+      return books;
+    }
+    
+    // إذا كانت البيانات مباشرة
+    console.log('Books from API:', result);
+    return result;
+    
+  } catch (error) {
+    console.error('Failed to fetch books from API:', error);
+    console.log('Falling back to mock data');
+    
+    // Fallback إلى بيانات وهمية أثناء التطوير
+    return new Promise((resolve) => {
+      setTimeout(() => resolve(mockBooks), 500);
+    });
+  }
 }
 
 /**
@@ -113,13 +138,40 @@ export async function getBooks(): Promise<Book[]> {
  * Expected response: Single Book object or null if not found
  */
 export async function getBook(id: string): Promise<Book | null> {
-  // TODO: Remove this mock implementation after deploying Lambda
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const book = mockBooks.find((b) => b.id === id);
-      resolve(book || null);
-    }, 300);
-  });
+  try {
+    const response = await fetch(`${API_BASE_URL}/books/${id}`);
+    
+    if (response.status === 404) {
+      console.log(`Book ${id} not found`);
+      return null;
+    }
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const result = await response.json();
+    
+    // Lambda ترجع { statusCode, headers, body }
+    if (result.body) {
+      return JSON.parse(result.body);
+    }
+    
+    // إذا كانت البيانات مباشرة
+    return result;
+    
+  } catch (error) {
+    console.error(`Failed to fetch book ${id}:`, error);
+    console.log('Falling back to mock data');
+    
+    // Fallback إلى بيانات وهمية
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const book = mockBooks.find((b) => b.id === id);
+        resolve(book || null);
+      }, 300);
+    });
+  }
 }
 
 /**
@@ -262,10 +314,30 @@ export async function getRecommendations(): Promise<Recommendation[]> {
  * Expected response: Array of ReadingList objects for the authenticated user
  */
 export async function getReadingLists(): Promise<ReadingList[]> {
-  // TODO: Remove this mock implementation after deploying Lambda
-  return new Promise((resolve) => {
-    setTimeout(() => resolve(mockReadingLists), 500);
-  });
+  try {
+    const response = await fetch(`${API_BASE_URL}/reading-lists`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const result = await response.json();
+    
+    // Lambda ترجع { statusCode, headers, body }
+    if (result.body) {
+      return JSON.parse(result.body);
+    }
+    
+    return result;
+    
+  } catch (error) {
+    console.error('Failed to fetch reading lists:', error);
+    console.log('Falling back to mock data');
+    
+    return new Promise((resolve) => {
+      setTimeout(() => resolve(mockReadingLists), 500);
+    });
+  }
 }
 
 /**
@@ -295,20 +367,41 @@ export async function getReadingLists(): Promise<ReadingList[]> {
 export async function createReadingList(
   list: Omit<ReadingList, 'id' | 'createdAt' | 'updatedAt'>
 ): Promise<ReadingList> {
-  // TODO: Remove this mock implementation after deploying Lambda
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const newList: ReadingList = {
-        ...list,
-        id: Date.now().toString(),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-      resolve(newList);
-    }, 500);
-  });
+  try {
+    const response = await fetch(`${API_BASE_URL}/reading-lists`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(list)
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const result = await response.json();
+    console.log('Reading list created:', result);
+    return result;
+    
+  } catch (error) {
+    console.error('Failed to create reading list:', error);
+    console.log('Falling back to mock data');
+    
+    // Fallback إلى بيانات وهمية
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const newList: ReadingList = {
+          ...list,
+          id: Date.now().toString(),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        resolve(newList);
+      }, 500);
+    });
+  }
 }
-
 /**
  * Update a reading list
  * TODO: Replace with PUT /reading-lists/:id API call
