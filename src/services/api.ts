@@ -129,53 +129,57 @@ export async function getBook(id: string): Promise<Book | null> {
  * Get user's reading lists - REAL AWS IMPLEMENTATION
  */
 export async function getReadingLists(): Promise<ReadingList[]> {
-  console.log('📚 Fetching reading lists from REAL AWS API...');
-  console.log(`🌐 URL: ${API_BASE_URL}/reading-lists`);
-
+  console.log('📚 Fetching reading lists from real API');
+  
   try {
-    const response = await fetch(`${API_BASE_URL}/reading-lists`);
-    console.log('📊 Response status:', response.status);
-
+    // تأكد من أن API_BASE_URL صحيح
+    console.log('API Base URL:', API_BASE_URL);
+    
+    // استخدم fetch مباشرة (بدون مصادقة مؤقتًا)
+    const response = await fetch(`${API_BASE_URL}/reading-lists`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        // إذا كان API يحتاج مصادقة، أضفها هنا
+        // 'Authorization': 'Bearer YOUR_TOKEN'
+      },
+    });
+    
+    console.log('Response status:', response.status);
+    
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('❌ Error response:', errorText);
-      throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
+      console.error('API Error:', response.status, response.statusText);
+      
+      // إذا كان خطأ 401 (Unauthorized)، أزل المصادقة من API Gateway
+      if (response.status === 401) {
+        console.error('Error 401: API needs authentication. Remove Cognito from API Gateway or add auth headers');
+      }
+      
+      return []; // ارجع مصفوفة فارغة بدل الخطأ
     }
-
-    const result = await response.json();
-    console.log('📦 Raw API response:', result);
-
-    // Handle Lambda response format
-    if (result.body && typeof result.body === 'string') {
-      const lists = JSON.parse(result.body);
-      console.log(`✅ SUCCESS! Got ${lists.length} REAL reading lists from AWS`);
-      return lists;
-    }
-
-    // If direct array
-    if (Array.isArray(result)) {
-      console.log(`✅ Direct array: ${result.length} reading lists`);
-      return result;
-    }
-
-    // If single object
-    if (result && typeof result === 'object' && !Array.isArray(result)) {
-      console.log('⚠️ API returned object instead of array, converting to array');
-      return [result];
-    }
-
-    console.warn('⚠️ Unexpected response format, returning empty array');
-    return [];
+    
+    const data = await response.json();
+    console.log('📦 Received data from API:', data);
+    return data;
+    
   } catch (error) {
-    console.error('❌ Failed to fetch reading lists from AWS:', error);
-    console.log('🔄 Falling back to mock data for development...');
-
-    // Return mock data
-    console.log('📋 Using mock reading lists (fallback)');
-    return [...mockReadingLists];
+    console.error('❌ Error fetching reading lists:', error);
+    
+    // للتصحيح: ارجع بيانات تجريبية
+    return [
+      {
+        id: "test-id-123",
+        name: "قائمة تجريبية",
+        description: "هذه بيانات تجريبية لأن API فشل",
+        userId: "test-user",
+        bookIds: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        isPublic: false
+      }
+    ];
   }
 }
-
 /**
  * Create a new reading list - REAL AWS IMPLEMENTATION
  */

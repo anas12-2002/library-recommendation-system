@@ -13,6 +13,16 @@ export interface Book {
   publishedYear: number;
   isbn: string;
 }
+export interface ReadingList {
+  id: string;
+  name: string;
+  description: string;
+  userId: string;
+  bookIds: string[];
+  createdAt: string;
+  updatedAt: string;
+  isPublic?: boolean; // أضف هذا السطر - علامة ? تعني اختيارية
+}
 
 export interface User {
   id: string;
