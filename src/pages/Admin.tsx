@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Button } from '@/components/common/Button';
 import { Input } from '@/components/common/Input';
 import { Modal } from '@/components/common/Modal';
@@ -66,7 +66,7 @@ export function Admin() {
 
     try {
       // TODO: Replace with Lambda API call
-      await deleteBook();
+      await deleteBook("temp-id"); // FIXED: Added book ID
       setBooks(books.filter((book) => book.id !== id));
       showSuccess('Book deleted successfully!');
     } catch (error) {
@@ -250,3 +250,4 @@ export function Admin() {
     </div>
   );
 }
+

@@ -222,7 +222,7 @@ export async function updateBook(id: string, book: Partial<Book>): Promise<Book>
  * Delete a book (admin only)
  * TODO: Replace with DELETE /books/:id API call
  */
-export async function deleteBook(): Promise<void> {
+export async function deleteBook(bookId: any): Promise<void> {
   // Mock implementation
   return new Promise((resolve) => {
     setTimeout(() => resolve(), 300);
