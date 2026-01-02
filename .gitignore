@@ -1,0 +1,10 @@
+﻿node_modules/
+.env
+.env.local
+dist/
+.DS_Store
+*.log
+.aws-sam/
+.vscode/
+coverage/
+*.tsbuildinfo
