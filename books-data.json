@@ -1,0 +1,19 @@
+{
+  "Books": [
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "1" },
+          "title": { "S": "The Midnight Library" },
+          "author": { "S": "Matt Haig" },
+          "genre": { "S": "Fiction" },
+          "description": { "S": "Between life and death there is a library..." },
+          "coverImage": { "S": "/book-covers/midnight-library.jpg" },
+          "rating": { "N": "4.5" },
+          "publishedYear": { "N": "2020" },
+          "isbn": { "S": "978-0525559474" }
+        }
+      }
+    }
+  ]
+}

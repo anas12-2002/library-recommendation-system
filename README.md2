@@ -1,0 +1,61 @@
+# Library Recommendation System (LibraryAI)
+
+Member :1 ANAS ANWER ABED ALFATTAH ABUSARA / 220218443
+        2 MOHAMAD SHEIKHA / 220218442
+An AI-powered library book recommendation system built with React, TypeScript, and AWS Serverless services. The application allows users to browse books, manage reading lists, and receive personalized recommendations using Amazon Bedrock (Claude 3 Haiku).
+
+## Live Application
+- https://d3to5pizbixlds.cloudfront.net
+
+## GitHub Repository
+- https://github.com/anas12-2002/library-recommendation-system
+
+## Features
+- User authentication with Amazon Cognito (Sign up, Login, Logout)
+- Browse all books
+- View book details
+- Create and manage reading lists
+- AI-powered book recommendations
+- Protected routes for authenticated users
+- Responsive design
+
+## Tech Stack
+**Frontend**
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+
+**Backend**
+- AWS API Gateway
+- AWS Lambda
+- DynamoDB
+- Amazon Cognito
+- Amazon Bedrock (Claude 3 Haiku)
+
+## Architecture
+```mermaid
+flowchart LR
+  User --> CloudFront
+  CloudFront --> S3
+  User --> Cognito
+  User --> APIGW
+  APIGW --> LambdaBooks
+  APIGW --> LambdaLists
+  APIGW --> LambdaRecs
+  LambdaBooks --> DynamoDB
+  LambdaLists --> DynamoDB
+  LambdaRecs --> Bedrock
+  ## Architecture Diagram
+![Architecture](https://docs/architecture.png)
+
+## Screenshots
+
+### Homepage
+![Homepage](screenshots/homepage.png)
+
+### Books
+![Books](screenshots/books.png)
+
+### AI Recommendations
+![AI](screenshots/recommendations.png)
